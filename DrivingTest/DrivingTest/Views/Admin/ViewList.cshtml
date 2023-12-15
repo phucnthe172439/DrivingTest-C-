@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Test";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+
+@model List<Quiz>
+
+<a class="btn btn-primary" asp-action="Index" asp-controller="Admin"> Back</a>
+
+<form id="frm" asp-controller="Admin" asp-action="ViewList" method="post">
+    <select name="cateid" onchange="change()" class="selectpicker">
+        <option value="0">All</option>
+        @foreach (Category c in ViewBag.categories)
+        {
+            @if (ViewBag.cateidselected == c.Id)
+            {
+                <option value="@c.Id" selected>@c.Name</option>
+            }
+            else
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        }
+    </select>
+</form>
+<script>
+    function change() {
+        document.getElementById("frm").submit();
+    }
+
+    
+</script>
+
+<table class="table table-bordered  table-hover">
+    <thead style="backdrop-color: gray">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Answer</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    @foreach (var t in Model)
+    {
+
+        <tbody>
+            <tr>
+                <th>@t.Id</th>
+                <th>@t.Title</th>
+                <th>@t.Answer</th>
+                <th>
+                    <a asp-controller="Admin" asp-action="Edit" asp-route-code="@t.Id">Details</a>
+                    <a asp-controller="Admin" asp-action="Delete" asp-route-code="@t.Id">Delete</a>
+                </th>
+            </tr>
+        </tbody>
+    }
+    
+</table>
+

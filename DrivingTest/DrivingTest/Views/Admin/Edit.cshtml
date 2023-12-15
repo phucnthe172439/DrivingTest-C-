@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewData["Title"] = "Test";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+@using DrivingTest.Models
+@model Quiz
+<a class="btn btn-primary" asp-action="ViewList"> Back</a>
+
+<form asp-controller="Admin" asp-action="Edit" method="post">
+
+    <br /> <div>
+        <label for="Title"> Title</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="Title"  />
+            <span asp-validation-for="Title"></span>
+        </div>
+    </div>
+
+    <br /><div>
+        <img asp-for="Image" src="@Model.Image"/>
+        <span asp-validation-for="Image"></span>
+    </div>
+    <br /><div>
+        <label for="A"> Answer A:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="A"  />
+            <span asp-validation-for="A"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="B"> Answer B:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="B"  />
+            <span asp-validation-for="B"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="C"> Answer C:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="C" />
+            <span asp-validation-for="C"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="A"> Answer D:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="D" />
+            <span asp-validation-for="D"></span>
+        </div>
+        <br />
+    </div>
+    Category:
+    <select name="cateid" asp-for="Categoryid">
+        <option value="0">All</option>
+        @foreach (Category c in ViewBag.categories)
+        {
+          <option value="@c.Id">@c.Name</option>
+            
+        }
+        <br />
+    </select><br />
+    <div class="form-group">
+        <label asp-for="IsZeroPoint" class="control-label"></label>
+        <div class="col-md-10">
+            <div class="checkbox">
+                <input asp-for="IsZeroPoint" class="form-check" />
+                <span asp-validation-for="IsZeroPoint" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+   @* <div>
+        <div >
+            
+            <input class="form-check-input" asp-for="IsZeroPoint" type="checkbox"  />
+            <label class="form-check-label" for="IsZeroPoint">
+                Câu điểm liệt
+            </label> 
+            <span asp-validation-for="IsZeroPoint"></span>
+        </div>
+
+    </div> *@
+    <br /> <div>
+        Answer : <input type="Text" asp-for="Answer" />
+        <span asp-validation-for="Answer"></span>
+    </div>
+    <input type="submit" value="EDIT" />
+</form>

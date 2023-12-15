@@ -1,0 +1,143 @@
+﻿@{
+    ViewData["Title"] = "Test";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+@using DrivingTest.Models;
+@model List<Quiz>
+<a class="btn btn-primary" asp-action="Index"> Back</a>
+<form id="frm" asp-controller="Admin" asp-action="ViewQuiz" method="post">
+    <select name="cateid" onchange="change()" class="btn">
+        <option value="0">All</option>
+        @foreach (Category c in ViewBag.categories)
+        {
+            @if (ViewBag.cateidselected == c.Id)
+            {
+                <option value="@c.Id" selected>@c.Name</option>
+            }
+            else
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        }
+    </select>
+</form>
+<script>
+    function change() {
+        document.getElementById("frm").submit();
+    }
+    var currentPage = 0;
+
+    function showPage(pageIndex) {
+        var pages = document.querySelectorAll('.quiz-page');
+        pages.forEach(function (page, index) {
+            if (index === pageIndex) {
+                page.style.display = 'block';
+            } else {
+                page.style.display = 'none';
+            }
+        });
+        updatePageNumbers();
+    }
+        function nextPage() {
+            if (currentPage < @Model.Count - 1) {
+                currentPage++;
+               
+                showPage(currentPage);
+            }
+        if (currentPage == @Model.Count-1) {
+            currentPage = 0;
+            showPage(currentPage);
+        }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                
+                showPage(currentPage);
+            }
+        if (currentPage == 0) {
+            currentPage = @Model.Count -1;
+            showPage(currentPage);
+        }
+        }
+        function goToPage(pageIndex) {
+            currentPage = pageIndex;
+            showPage(currentPage);
+        }
+        function updatePageNumbers() {
+            var pageNumbersContainer = document.getElementById('page-numbers');
+            pageNumbersContainer.innerHTML = '';
+
+            for (var i = 0; i < @Model.Count; i++) {
+                var pageNumberButton = document.createElement('button');
+                pageNumberButton.textContent = i + 1;
+                pageNumberButton.onclick = function (index) {
+                    return function () {
+                        goToPage(index);
+                    };
+                }(i);
+
+                pageNumbersContainer.appendChild(pageNumberButton);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            showPage(currentPage);
+        });
+    
+</script>
+<div class="container mt-sm-5 my-1">
+    <div class="quiz-container">
+@for (var i= 0; i < Model.Count; i++) {
+    var item = Model[i];
+ <div class="quiz-page" style="display: none;" >
+<div class="card" style="width: 30rem;">
+        <div class="card-body">
+            @if (item.Image != null)
+            {
+                <img src="@item.Image" class="img-fluid" />
+            }
+
+            <h5 class="card-title">@item.Id</h5>
+            <h3 class="card-text">@item.Title</h3>
+            @if (item.IsZeroPoint.ToString()== "True")
+            {
+                <p class="card-text" style="font-size:small "> <i>Câu điểm liệt</i></p>
+            }
+            else if (item.IsZeroPoint.ToString() == "False")
+            {
+               
+            }
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">A: @item.A</li>
+            <li class="list-group-item">B: @item.B</li>
+            @if (item.C != null)
+            {
+
+
+                <li class="list-group-item">C: @item.C</li>
+            }
+            @if(item.D != null)
+            {
+                 <li class="list-group-item">D: @item.D</li>
+            }
+            
+        </ul>
+        <div>
+            <p class="card-text"> Đáp án: @item.Answer</p>
+        </div>
+    </div>
+    
+  
+</div>
+}
+</div>
+<div id="pagination">
+    <button onclick="prevPage()">Previous</button>
+    <button onclick="nextPage()">Next</button>
+</div>
+</div>

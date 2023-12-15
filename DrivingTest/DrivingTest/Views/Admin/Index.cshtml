@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Test";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+@model User
+@using DrivingTest.Models;
+
+@if (TempData["role"].Equals(1))
+{
+    <a class="btn btn-primary" asp-controller="Admin" asp-action="Add" method="post">
+        Add Quiz
+    </a>
+    <a class="btn btn-primary" asp-controller="Admin" asp-action="ViewList" method="post">
+        View Quiz
+    </a>
+} 
+<a class="btn btn-primary" asp-controller="Admin" asp-action="ViewQuiz" method ="get">
+    Ôn tập câu hỏi
+</a>
+<a class="btn btn-primary" asp-controller="Exam" asp-action="Index">
+    Thi thử đề ngẫu nhiên
+</a>
+<a class="btn btn-primary" asp-controller="Exam" asp-action="Index">
+    Ôn tập câu điểm liệt 
+</a>
+

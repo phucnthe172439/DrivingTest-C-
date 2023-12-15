@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewData["Title"] = "Take Exam";
+    Layout = "~/Views/Shared/_LayoutExam.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+<div class="container mt-sm-5 my-1">
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Admin"> Back</a>
+    <div class="container">
+        <h2>----------Score----------</h2>
+        <h3>Điểm của bạn là: <strong>@ViewBag.Score / 24</strong></h3>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="Exam"> Thi lại</a>
+    </div>
+</div>

@@ -1,0 +1,212 @@
+﻿@{
+    ViewData["Title"] = "Take Exam";
+    Layout = "~/Views/Shared/_LayoutExam.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+    
+    <style>
+
+        #timer {
+        font-size: 2em;
+        text-align: center;
+        }</style>
+}
+@using X.PagedList.Mvc.Core;    
+@using DrivingTest.Models;
+@*@model X.PagedList.IPagedList<Quiz>*@
+@model List<Quiz>
+
+<div id="timer">00:00:00</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const timerDuration = 1800;
+    //1800s = 30p
+
+    let timer = timerDuration;
+    const timerElement = document.getElementById("timer");
+
+    function updateTimer() {
+    const hours = Math.floor(timer / 3600);
+    const minutes = Math.floor((timer % 3600) / 60);
+    const seconds = timer % 60;
+
+    timerElement.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+    }
+
+    function formatTime(time) {
+    return time < 10 ? `0${time}` : time;
+    }
+
+    function startTimer() {
+    updateTimer();
+    const interval = setInterval(function () {
+    if (timer > 0) {
+    timer--;
+    updateTimer();
+    } else {
+    clearInterval(interval);
+    alert("Hết thời gian!!!");
+    window.location = "showResult";
+    }
+    }, 1000);
+    }
+
+    // Start the timer when the page is loaded
+    startTimer();
+    });
+    //pagination
+    var currentPage = 0; 
+
+    function showPage(pageIndex) {
+        var pages = document.querySelectorAll('.quiz-page');
+        pages.forEach(function (page, index) {
+            if (index === pageIndex) {
+                page.style.display = 'block';
+            } else {
+                page.style.display = 'none';
+            }
+        }
+       
+        );
+        updatePageNumbers();
+    }
+
+    function nextPage() {
+        if (currentPage < @Model.Count - 1) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    }
+    function goToPage(pageIndex) {
+        currentPage = pageIndex;
+        showPage(currentPage);
+    }
+    function updatePageNumbers() {
+        var pageNumbersContainer = document.getElementById('page-numbers');
+        pageNumbersContainer.innerHTML = '';
+
+        for (var i = 0; i < @Model.Count; i++) {
+            var pageNumberButton = document.createElement('button');
+            pageNumberButton.textContent = i + 1;
+            pageNumberButton.onclick = function (index) {
+                return function () {
+                    goToPage(index);
+                };
+            }(i);
+
+            pageNumbersContainer.appendChild(pageNumberButton);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        showPage(currentPage);
+    });
+
+    function checkAnswers() {
+        var userAnswers = [];
+
+        for (var i = 0; i < @Model.Count; i++) {
+            var selectedAnswer = $('input[name="answer_' + i + '"]:checked').val();
+            userAnswers.push(selectedAnswer || ''); // Use an empty string for unanswered questions
+        }
+
+        return userAnswers;
+    }
+
+    function calculateScore(userAnswers) {
+        var score = 0;
+        var correctAnswers = @Html.Raw(Json.Serialize(Model.Select(item => item.AnswerChar)));
+
+        for (var i = 0; i < userAnswers.length; i++) {
+            var selectedAnswer = userAnswers[i].toLowerCase();
+            var correctAnswer = correctAnswers[i].toLowerCase();
+
+            if (selectedAnswer === correctAnswer) {
+                score++;
+            }
+        }
+
+        return score;
+    }
+
+    function submitAnswers() {
+        var userAnswers = checkAnswers();
+
+        // Check if all questions are answered
+        if (userAnswers.indexOf('') !== -1) {
+            alert('Hãy điền hết đáp án.');
+            return;
+        }
+
+        var score = calculateScore(userAnswers);
+        
+        redirectToResultPage(score);
+        // Optionally, you can redirect or perform other actions based on the result
+        // window.location = "/Controller/ResultAction?score=" + score;
+    }
+    function redirectToResultPage(score) {
+        // Modify the URL to match your controller and action
+        var resultPageUrl = '@Url.Action("showResult", "Exam")' + '?score=' + score;
+        window.location.href = resultPageUrl;
+    }
+</script>
+
+<div class="container mt-sm-5 my-1">
+    <div class="quiz-container">
+        
+    <div id="page-numbers" class="page-numbers-container" ></div>
+    @for (var i= 0; i < Model.Count; i++) {
+        var item = Model[i];
+        <div class="quiz-page" style="display: none;" >
+        <ul class="quiz">
+                <li>
+                        <h4>@if(item.IsZeroPoint ==true)
+                            {
+                                <p style="color:red;">[Điểm Liệt]</p>
+                            }@item.Title</h4>
+                        @if (item.Image != null)
+                        {
+                           
+                            <img src="@item.Image" style="margin:0 auto; width:50% "/>
+                        }
+                        <ul class="choices">
+                        <li>
+                                <label><input type="radio" name="answer_@i" value="A"  /><span>@item.A</span></label>
+                        </li>
+                    <li>
+                                <label><input type="radio" name="answer_@i" value="B"  /><span>@item.B</span></label>
+                    </li>
+                    @if (item.C != null)
+                    {
+                        <li>
+                                    <label><input type="radio" name="answer_@i" value="C"  /><span>@item.C</span></label>
+                        </li>
+                    }
+                    @if (item.D != null)
+                    {
+                        <li>
+                                    <label><input type="radio" name="answer_@i" value="D"  /><span>@item.D</span></label>
+                    </li> }
+                    </ul>
+                </li>
+            </ul>
+ 
+    </div>
+    }
+    </div>
+    <div id="pagination">
+        <button onclick="prevPage()">Previous</button>
+        
+        <button onclick="nextPage()">Next</button>
+        <button  onclick="submitAnswers()">Submit</button>
+    </div>
+        
+</div>

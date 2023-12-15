@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Test";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+    var tempData = TempData["Username"];
+    TempData.Keep("Username");
+    TempData.Keep("role");
+}
+@using DrivingTest.Models
+@model Quiz
+<a class="btn btn-primary" asp-action="Index"> Back</a>
+
+<form  asp-controller="Admin" asp-action="Add" method="post">
+
+    <br /> <div>
+        <label for="Title"> Title</label>
+         <div class="input-group">   <input type="Text" class="form-control" asp-for="Title" required />
+        <span asp-validation-for="Title"></span>
+        </div> 
+        </div>
+    
+    <br /><div>
+        Image: <input type="image" asp-for="Image" required />
+        <span asp-validation-for="Image"></span>
+    </div>
+    <br /><div>
+        <label for="A"> Answer A:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="A" required />
+            <span asp-validation-for="A"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="B"> Answer B:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="B" required />
+            <span asp-validation-for="B"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="C"> Answer C:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="C"/>
+            <span asp-validation-for="C"></span>
+        </div>
+    </div>
+    <br /><div>
+        <label for="A"> Answer D:</label>
+        <div class="input-group">
+            <input type="Text" class="form-control" asp-for="D" />
+            <span asp-validation-for="D"></span>
+        </div>
+        <br />
+    </div>
+    Category:
+    <select name="cateid" asp-for="Categoryid">
+        <option value="0">All</option>
+        @foreach (Category c in ViewBag.categories)
+        {
+            @if (ViewBag.cateidselected == c.Id)
+            {
+                <option value="@c.Id" selected>@c.Name</option>
+            }
+            else
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        }
+        <br />
+    </select><br />
+    <div >
+        <div>
+            <input class="form-check-input" type="checkbox" asp-for="IsZeroPoint" type="checkbox" />
+            <label class="form-check-label" for="IsZeroPoint">
+                Câu điểm liệt
+            </label>
+        </div>
+        
+    </div>
+    <br /> <div>
+        Answer : <input type="Text" asp-for="Answer" />
+        <span asp-validation-for="Answer"></span>
+    </div>
+    <input type="submit" value="ADD" />
+</form>
